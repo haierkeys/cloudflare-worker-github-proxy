@@ -24,6 +24,7 @@ export default {
 			return new Response('Hello World!');
 		}
 
+		console.log(request.url);
 
 		const srcURL = new URL(request.url);
 		let newurl:string
@@ -33,6 +34,8 @@ export default {
 		} else {
 			newurl = request.url.replace(srcURL.origin, 'https://github.com');
 		}
+
+		console.log(srcURL.origin);
 
 		const req = new Request(newurl, request);
 		const res = await fetch(req);
