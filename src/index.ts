@@ -24,35 +24,36 @@ export default {
 			return new Response('Hello World!');
 		}
 
-		console.log(request.url);
-
 		const srcURL = new URL(request.url);
 		let newurl:string
 
-		if (request.url.includes('https://')) {
+		if (removeHttpPrefix(request.url).includes('https://')) {
 			newurl = request.url.replace(srcURL.origin + '/', '');
 		} else {
 			newurl = request.url.replace(srcURL.origin, 'https://github.com');
 		}
 
-		console.log(srcURL.origin);
+		console.info("request-url:", request.url, "=>", newurl);
 
 		const req = new Request(newurl, request);
 		const res = await fetch(req);
 		let newres = new Response(res.body, res);
-
 		let location = newres.headers.get('location');
-		console.log(location);
 		if (location !== null && location !== "") {
 
-			if (request.url.includes('https://')) {
+			if (removeHttpPrefix(request.url).includes('https://')) {
 				location = srcURL.origin+'/'+ location;
 			} else {
 				location = location.replace('https://github.com', srcURL.origin);
 			}
-
 			newres.headers.set('location', location);
 		}
 		return newres
 	},
 } satisfies ExportedHandler<Env>;
+
+
+
+function removeHttpPrefix(url: string): string {
+	return url.replace(/^https?:\/\//, '');
+}
